@@ -2,6 +2,8 @@ import React from 'react'
 import RegistrationForm from './RegistrationForm';
 import { useState } from 'react'
 import SchedulePick from './SchedulePick';
+import {db} from '/firebase'
+import {doc, setDoc, addDoc, collection} from 'firebase/firestore'
 
 const App = () => {
 
@@ -14,9 +16,24 @@ const App = () => {
         console.log(data)
      }
      
-     const handleCombineData = (data) =>{ // after masubmit ng scheduler
-        setCurrentUserData(data);
-        console.log(data)   
+     const handleCombineData = async (fullData) =>{ // after submitting from the scheduler page
+        console.log(fullData)   
+        const customDocId = fullData.studentNumber; 
+
+    try {
+      const docRef = doc(db, "Schedules", customDocId); 
+      await setDoc(docRef, { 
+        ...fullData
+      });
+
+      console.log("Combined entry successfully written to Firestore with ID: ", docRef.id);
+      console.log('Your schedule is confirmed!'); // Success message in console
+      setCurrentUserData(null); 
+      setCurrentPage('register');
+    } catch (e) {
+      console.log("u fucked up")
+    }   
+        
      }
 
   return (
