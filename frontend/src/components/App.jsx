@@ -4,7 +4,6 @@ import { useState } from 'react'
 import SchedulePick from './SchedulePick';
 import {db} from '/firebase'
 import {doc, setDoc, addDoc, collection} from 'firebase/firestore'
-import { SpeedInsights } from "@vercel/speed-insights/react"
 
 const App = () => {
 
@@ -48,7 +47,6 @@ const App = () => {
             <SchedulePick onSubmitSchedule={handleCombineData}
             userData={currentUserData}/>
         )}
-        <SpeedInsights />
     </div>
   )
 }
