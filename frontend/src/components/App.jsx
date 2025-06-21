@@ -4,7 +4,7 @@ import { useState } from 'react'
 import SchedulePick from './SchedulePick';
 import {db} from '/firebase'
 import {doc, setDoc, addDoc, collection} from 'firebase/firestore'
-
+import { SpeedInsights } from "@vercel/speed-insights/react"
 const App = () => {
 
      const [currentUserData, setCurrentUserData] = useState(null); // Stores { name, studentNumber } pero will then add the date and time pag sa schedule na
@@ -35,6 +35,7 @@ const App = () => {
 
   return (
     <div className='w-screen h-screen'> 
+    
         {currentPage === 'register' &&(
             <RegistrationForm onSubmitRegistration={handleRegistrationSubmit} /> 
         )}
@@ -46,6 +47,7 @@ const App = () => {
             <SchedulePick onSubmitSchedule={handleCombineData}
             userData={currentUserData}/>
         )}
+        <SpeedInsights />
     </div>
   )
 }
