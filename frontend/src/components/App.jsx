@@ -5,6 +5,7 @@ import SchedulePick from './SchedulePick';
 import {db} from '/firebase'
 import {doc, setDoc, addDoc, collection} from 'firebase/firestore'
 import { SpeedInsights } from "@vercel/speed-insights/react"
+
 const App = () => {
 
      const [currentUserData, setCurrentUserData] = useState(null); // Stores { name, studentNumber } pero will then add the date and time pag sa schedule na
