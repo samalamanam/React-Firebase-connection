@@ -11,25 +11,17 @@ const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!selectedDate || !selectedTimeOfDay) {
-      showUserMessage('Please select both a date and AM/PM.', 'error');
       return;
     }
 
-    // Combine data from this form with user data received via props
+    // runs pag sinubmit, mo ung deets mo
     const combinedScheduleData = {
-      ...userData, // This is the 'name' and 'studentNumber' from App.jsx
-      date: selectedDate, // Date from this form
-      timeOfDay: selectedTimeOfDay, // Time of Day from this form
+      ...userData, 
+      date: selectedDate,
+      timeOfDay: selectedTimeOfDay,
     };
-
-    console.log('Combined Data ready to send from SchedulePick:', combinedScheduleData);
-
-    // Pass the combined data UP to the parent component's submission handler
     await onSubmitSchedule(combinedScheduleData);
-    
-    // Optional: Clear fields after submission
-    setSelectedDate('');
-    setSelectedTimeOfDay('');
+
   };
 
   return (

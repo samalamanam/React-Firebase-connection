@@ -16,18 +16,15 @@ const App = () => {
         console.log(data)
      }
      
-     const handleCombineData = async (fullData) =>{ // after submitting from the scheduler page
+     const handleCombineData = async (fullData) =>{ // after ng scheduler submission
         console.log(fullData)   
-        const customDocId = fullData.studentNumber; 
 
+        const customDocId = fullData.studentNumber; 
     try {
-      const docRef = doc(db, "Schedules", customDocId); 
+      const docRef = doc(db, "Schedules", customDocId); //looking for proper colletion and creating new documentation renamed ng studentnumber na inimput
       await setDoc(docRef, { 
         ...fullData
       });
-
-      console.log("Combined entry successfully written to Firestore with ID: ", docRef.id);
-      console.log('Your schedule is confirmed!'); // Success message in console
       setCurrentUserData(null); 
       setCurrentPage('register');
     } catch (e) {

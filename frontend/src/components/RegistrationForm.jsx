@@ -9,10 +9,8 @@ const RegistrationForm = ({onSubmitRegistration}) => {
     const handleSubmit = (e) => {
     e.preventDefault();
     if (!name || !studentNumber) {
-        alert("Please fill in both name and student number."); // You can replace with a prop-based message
         return;
     }
-    // Call the prop function to pass data UP to App.jsx
     onSubmitRegistration({ name, studentNumber }); 
 };
 
