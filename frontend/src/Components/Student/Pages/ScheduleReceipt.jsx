@@ -42,12 +42,12 @@ const ScheduleReceipt = ({ userData, confirmBooking }) => {
           <br></br>
          
           <h2 className="mt-2 mb-3 font-medium underline text-[#656565]">Date and Time:</h2>
-          <h3 className="mb-6 font-light text-[#656565]"><h1 className='text-gray-600 font-bold font-league'>{userData.datePicked}<br/>{userData.time}</h1></h3>
+          <h3 className="mb-6 font-light text-[#656565]"><p className='text-gray-600 font-bold font-league'>{userData.datePicked}<br/>{userData.time}</p></h3>
 
 
           <h2 className="mb-3 font-medium underline text-[#656565]">Your Details:</h2>
-          <h3 className="mb-2 font-light text-[#656565]">Student Number: <br /><h1 className='text-gray-600 font-bold font-league'>{userData.studentNumber}</h1></h3>
-          <h3 className="mb-17 font-light text-[#656565]">Student Name: <br /><h1 className='text-gray-600 font-bold font-league'>{userData.fullName}</h1></h3>
+          <h3 className="mb-2 font-light text-[#656565]">Student Number: <br /><p className='text-gray-600 font-bold font-league'>{userData.studentNumber}</p></h3>
+          <h3 className="mb-17 font-light text-[#656565]">Student Name: <br /><p className='text-gray-600 font-bold font-league'>{userData.fullName}</p></h3>
 
 
           <button

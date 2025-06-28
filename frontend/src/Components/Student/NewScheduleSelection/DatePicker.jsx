@@ -63,7 +63,7 @@ function DatePicker({userData, onSubmitDate})
   const handleDateSelect = async (date) =>
   {
     setSelectedDate(date);
-   const pickedDate = format(date, 'PPPP');
+   const pickedDate = format(date, 'MMM-dd-yyyy');
     const addDateData = {
       ...userData, 
       datePicked: pickedDate,
