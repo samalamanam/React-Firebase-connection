@@ -142,7 +142,7 @@ const TimePicker = ({dataWithDate, onSubmitSchedule, handleFirestoreError}) => /
                     <div className={`w-3 h-full rounded-l-lg ${bookedCountDisplay >= maxCapacityDisplay * 0.75 ? 'bg-[#b11616]' : bookedCountDisplay >= maxCapacityDisplay * 0.5 ? 'bg-[#d7e427]' : 'bg-[#27732A]'} `}>
                         {/* Dynamic color based on booked count percentage */}
                     </div>
-                    <h1 className='mx-2'>Slots {bookedCountDisplay}/{maxCapacityDisplay}</h1> {/* Dynamic display */}
+                    <h1 className='mx-2'>Slots {maxCapacityDisplay-bookedCountDisplay}/{maxCapacityDisplay}</h1> {/* Dynamic display */}
                 </div>
             </div>
 
