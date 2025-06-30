@@ -2,47 +2,43 @@ import React from 'react';
 
 const ScheduleReceipt = ({ userData, confirmBooking }) => {
 
-
+  // It's good practice to log userData here to confirm its structure
+  console.log("ScheduleReceipt received userData:", userData);
 
   return (
-    <div className="relative flex justify-center items-center min-h-screen bg-[url('Components\public\students-with-unif-tb.png')] bg-cover bg-center px-4">
-
-     
+    <div className="relative flex justify-center items-center min-h-screen bg-[url('Components/public/students-with-unif-tb.png')] bg-cover bg-center px-4">
+      {/* Background Overlay */}
       <div className="absolute inset-0 bg-black opacity-70 z-0"></div>
 
-      
+      {/* Content Container */}
       <div className="relative flex flex-col items-center justify-center gap-6 w-full shm:max-w-sm md:max-w-sm lg:max-w-sm xl:max-w-md 2xl:max-w-md z-10">
 
-
-        
+        {/* Checkmark Image */}
         <div className="w-14 sm:w-11 md:w-13 lg:w-14">
-        <img src="src\Components\public\check.png" alt="check" className="w-full h-auto" />
+        <img src="src/Components/public/check.png" alt="check" className="w-full h-auto" /> {/* FIX: Changed backslashes to forward slashes */}
         </div>
 
-
-       
+        {/* Confirmation Message */}
         <div className="poppins-font text-[#ECECEC] text-center font-medium text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-3xl px-4 whitespace-nowrap">
          Your slot has been confirmed!
         </div>
 
-
-
-        
+        {/* Receipt Details Box */}
         <div className="poppins-font bg-gray-200 text-center rounded-4xl shadow-xl w-85 max-w-md px-0 pb-6 text-sm sm:text-base md:text-lg lg:text-xl flex flex-col items-center justify-center overflow-hidden">
 
-         
+          {/* Header Bar */}
           <div className="w-full h-8 bg-[#5C0101] text-[#ECECEC] flex items-center justify-center rounded-t-4xl text-lg font-semibold">
-            
+            {/* Content for header bar if needed */}
           </div>
 
-         
-          <div className="h-6" />
+          <div className="h-6" /> {/* Spacer */}
 
           <h1 className="text-4xl tracking-tighter font-semibold underline text-[#5B0000] ">Slot Information</h1>
           <br></br>
-         
+
           <h2 className="mt-2 mb-3 font-medium underline text-[#656565]">Date and Time:</h2>
-          <h3 className="mb-6 font-light text-[#656565]"><p className='text-gray-600 font-bold font-league'>{userData.datePicked}<br/>{userData.time}</p></h3>
+          {/* --- CRITICAL FIX: Changed userData.time to userData.timePicked --- */}
+          <h3 className="mb-6 font-light text-[#656565]"><p className='text-gray-600 font-bold font-league'>{userData.datePicked}<br/>{userData.timePicked}</p></h3>
 
 
           <h2 className="mb-3 font-medium underline text-[#656565]">Your Details:</h2>
@@ -58,7 +54,7 @@ const ScheduleReceipt = ({ userData, confirmBooking }) => {
             Confirm
           </button>
         </div>
-        <h1 className=" text-center italic poppins-font font-extralight text-[#D9D9D9] ">Note:  Please take a screenshot of the  receipt 
+        <h1 className=" text-center italic poppins-font font-extralight text-[#D9D9D9] ">Note: Please take a screenshot of the receipt
 and close the website as soon as you finished your slot confirmation.</h1>
       </div>
     </div>

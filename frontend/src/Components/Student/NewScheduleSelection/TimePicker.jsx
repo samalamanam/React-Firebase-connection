@@ -8,6 +8,7 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
     const [isAM, setIsAm] = useState(true);
     const [slotNumber, setSlotNumber] = useState(9) // number of slots left - This will need to be fetched from Firestore later
     const [selectedTime, setSelectedTime] = useState(null);
+    const [maximumSlots, setMaximumSlots] = useState(30); // This will also need to be fetched from Firestore later
 
     const handleChangePeriod = () =>
     {
@@ -55,10 +56,10 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
                 </button>
 
                 <div className='text-lg sm:text-2xl border rounded-lg  border-[#A3A3A3] shadow-md flex justify-between w-fit'>
-                    <div className={`w-3 h-full rounded-l-lg ${slotNumber <= 4 ? 'bg-[#b11616]' : slotNumber > 4 && slotNumber <= 8 ? 'bg-[#d7e427]' : 'bg-[#27732A]'} `}>
+                    <div className={`w-3 h-full rounded-l-lg ${slotNumber <= (maximumSlots/3) ? 'bg-[#b11616]' : slotNumber > (maximumSlots/3)  && slotNumber < (maximumSlots/2) ? 'bg-[#d7e427]' : 'bg-[#27732A]'} `}>
 
                     </div>
-                    <h1 className='mx-2'>Slots {slotNumber}/12</h1>
+                    <h1 className='mx-2'>Slots {slotNumber}/{maximumSlots}</h1>
                 </div>
             </div>
 
