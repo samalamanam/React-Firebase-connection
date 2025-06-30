@@ -1,24 +1,107 @@
-import React from 'react'
-import { useState } from 'react'
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { db } from '../../../db/firebase'; // Adjust the import path as necessary
+import { doc, getDoc } from 'firebase/firestore'; // Import getDoc and doc
 
-const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
+const TimePicker = ({dataWithDate, onSubmitSchedule, handleFirestoreError}) => // Added handleFirestoreError prop
 {
 
     const [isAM, setIsAm] = useState(true);
-    const [slotNumber, setSlotNumber] = useState(9) // number of slots left - This will need to be fetched from Firestore later
+    const [bookedCountDisplay, setBookedCountDisplay] = useState(0); // State for booked count to display
+    const [maxCapacityDisplay, setMaxCapacityDisplay] = useState(0); // State for max capacity to display
     const [selectedTime, setSelectedTime] = useState(null);
-    const [maximumSlots, setMaximumSlots] = useState(30); // This will also need to be fetched from Firestore later
+    const [fetchedDailySlots, setFetchedDailySlots] = useState(null); // To store the 'slots' map from Firestore
+
+    // Effect to fetch daily slot data when dataWithDate (datePicked) changes
+    useEffect(() => {
+        const fetchDailySlots = async () => {
+            if (!dataWithDate || !dataWithDate.datePicked) {
+                // Reset display if no date is selected
+                setFetchedDailySlots(null);
+                setBookedCountDisplay(0);
+                setMaxCapacityDisplay(0);
+                setSelectedTime(null);
+                return;
+            }
+
+            const dailySlotDocId = dataWithDate.datePicked;
+            const dailySlotDocRef = doc(db, "DailySlotsAvailability", dailySlotDocId);
+
+            try {
+                console.log(`TimePicker: Attempting to fetch daily slot document for: ${dailySlotDocId}`);
+                const docSnap = await getDoc(dailySlotDocRef); // <-- READ OPERATION
+
+                if (docSnap.exists()) {
+                    const slotsData = docSnap.data().slots;
+                    console.log("TimePicker: Fetched daily slots data:", slotsData);
+                    setFetchedDailySlots(slotsData);
+
+                    // Optionally, set initial display to a default slot or just max capacity
+                    // For now, we'll reset and wait for a user to pick a time
+                    setBookedCountDisplay(0);
+                    setMaxCapacityDisplay(0); // This will be updated when a specific time is chosen
+                    setSelectedTime(null); // Clear selected time when date changes
+
+                    // If you want to show a default slot's availability on date load:
+                    // const defaultSlotKey = isAM ? "8:00am - 9:00am" : "1:00pm - 2:00pm"; // Or any other default
+                    // if (slotsData && slotsData[defaultSlotKey]) {
+                    //     setBookedCountDisplay(slotsData[defaultSlotKey].bookedCount);
+                    //     setMaxCapacityDisplay(slotsData[defaultSlotKey].maxCapacity);
+                    //     setSelectedTime(defaultSlotKey); // Auto-select the default time
+                    // } else if (slotsData) { // If default slot not found, but slots exist, maybe show total capacity
+                    //     // Calculate total max capacity from all slots
+                    //     let totalMax = 0;
+                    //     Object.values(slotsData).forEach(slot => totalMax += slot.maxCapacity);
+                    //     setMaxCapacityDisplay(totalMax);
+                    //     setBookedCountDisplay(0); // Or sum all booked counts if desired
+                    // }
+
+                } else {
+                    console.warn(`TimePicker: Daily slot document for ${dailySlotDocId} does not exist.`);
+                    setFetchedDailySlots(null);
+                    setBookedCountDisplay(0);
+                    setMaxCapacityDisplay(0);
+                    setSelectedTime(null);
+                    // DatePicker should have created this, so if it's missing, it's an issue.
+                    // No need to call handleFirestoreError here, as DatePicker should ensure existence.
+                }
+            } catch (e) {
+                console.error("TimePicker: Error fetching daily slots:", e);
+                if (handleFirestoreError) {
+                    handleFirestoreError(e); // Propagate error to centralized handler
+                }
+                setFetchedDailySlots(null);
+                setBookedCountDisplay(0);
+                setMaxCapacityDisplay(0);
+                setSelectedTime(null);
+            }
+        };
+
+        fetchDailySlots();
+    }, [dataWithDate, handleFirestoreError]); // Re-run when selected date changes
 
     const handleChangePeriod = () =>
     {
         setIsAm(!isAM)
-        setSelectedTime(null)
+        setSelectedTime(null) // Clear selected time when switching AM/PM
+        setBookedCountDisplay(0); // Reset display
+        setMaxCapacityDisplay(0);
     }
 
     const handleChooseTime = (e) =>
     {
-        setSelectedTime(e.target.value);
+        const chosenTime = e.target.value;
+        setSelectedTime(chosenTime);
+
+        if (fetchedDailySlots && fetchedDailySlots[chosenTime]) {
+            const slotDetails = fetchedDailySlots[chosenTime];
+            setBookedCountDisplay(slotDetails.bookedCount);
+            setMaxCapacityDisplay(slotDetails.maxCapacity);
+        } else {
+            // Fallback if data isn't immediately available or slot is missing
+            setBookedCountDisplay(0);
+            setMaxCapacityDisplay(0); // Or a default max capacity like 30
+            console.warn(`TimePicker: Details for selected time slot ${chosenTime} not found in fetched data.`);
+        }
     }
 
     const handleSubmitSchedule = async() =>
@@ -31,7 +114,7 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
 
         const fullScheduleData = {
             ...dataWithDate,
-            timePicked: selectedTime, // <-- CRITICAL FIX: Changed 'time' to 'timePicked'
+            timePicked: selectedTime,
         };
 
        await onSubmitSchedule(fullScheduleData);
@@ -56,10 +139,10 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
                 </button>
 
                 <div className='text-lg sm:text-2xl border rounded-lg  border-[#A3A3A3] shadow-md flex justify-between w-fit'>
-                    <div className={`w-3 h-full rounded-l-lg ${slotNumber <= (maximumSlots/3) ? 'bg-[#b11616]' : slotNumber > (maximumSlots/3)  && slotNumber < (maximumSlots/2) ? 'bg-[#d7e427]' : 'bg-[#27732A]'} `}>
-
+                    <div className={`w-3 h-full rounded-l-lg ${bookedCountDisplay >= maxCapacityDisplay * 0.75 ? 'bg-[#b11616]' : bookedCountDisplay >= maxCapacityDisplay * 0.5 ? 'bg-[#d7e427]' : 'bg-[#27732A]'} `}>
+                        {/* Dynamic color based on booked count percentage */}
                     </div>
-                    <h1 className='mx-2'>Slots {slotNumber}/{maximumSlots}</h1>
+                    <h1 className='mx-2'>Slots {bookedCountDisplay}/{maxCapacityDisplay}</h1> {/* Dynamic display */}
                 </div>
             </div>
 
@@ -67,7 +150,7 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
 
                 <div className='flex martian-font gap-x-8'>
 
-                    <button value={isAM ? "8:00am - 9:00am" : "1:00pm - 2:00pm"} // Standardized
+                    <button value={isAM ? "8:00am - 9:00am" : "1:00pm - 2:00pm"}
                         onClick={(e) => handleChooseTime(e)}
                         className={` shadow-md rounded-lg transition-all py-5 p-2 sm:px-10 duration-200 border-2 ${selectedTime === (isAM ? "8:00am - 9:00am" : "1:00pm - 2:00pm")
                             ? isAM ? 'bg-[#E1A500] border-[#C68C10] text-white' : ' text-white bg-purple-400 border-purple-500' :
@@ -76,7 +159,7 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
                         {isAM ? "8:00am - 9:00am" : "1:00pm - 2:00pm"}
                     </button>
 
-                    <button value={isAM ? "9:00am - 10:00am" : "2:00pm - 3:00pm"} // Standardized
+                    <button value={isAM ? "9:00am - 10:00am" : "2:00pm - 3:00pm"}
                         onClick={(e) => handleChooseTime(e)}
                         className={`shadow-md rounded-lg transition-all duration-200 py-5 p-2 sm:px-10 border-2 ${selectedTime === (isAM ? "9:00am - 10:00am" : "2:00pm - 3:00pm")
                             ? isAM ? 'bg-[#E1A500] border-[#C68C10] text-white' : ' text-white bg-purple-400 border-purple-500' :
@@ -89,7 +172,7 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
 
                 <div className='flex martian-font gap-x-8'>
 
-                    <button value={isAM ? "10:00am - 11:00am" : "3:00pm - 4:00pm"} // Standardized
+                    <button value={isAM ? "10:00am - 11:00am" : "3:00pm - 4:00pm"}
                         onClick={(e) => handleChooseTime(e)}
                         className={`shadow-md rounded-lg transition-all duration-200  ${selectedTime === (isAM ? "10:00am - 11:00am" : "3:00pm - 4:00pm")
                             ? isAM ? 'bg-[#E1A500] border-[#C68C10] text-white' : ' text-white bg-purple-400 border-purple-500' :
@@ -98,7 +181,7 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
                         {isAM ? "10:00am - 11:00am" : "3:00pm - 4:00pm"}
                     </button>
 
-                    <button value={isAM ? "11:00am - 12:00pm" : "4:00pm - 5:00pm"} // Standardized (12:00pm for noon)
+                    <button value={isAM ? "11:00am - 12:00pm" : "4:00pm - 5:00pm"}
                         onClick={(e) => handleChooseTime(e)}
                         className={`shadow-md rounded-lg transition-all duration-200  ${selectedTime === (isAM ? "11:00am - 12:00pm" : "4:00pm - 5:00pm")
                             ? isAM ? 'bg-[#E1A500] border-[#C68C10] text-white' : ' text-white bg-purple-400 border-purple-500' :
