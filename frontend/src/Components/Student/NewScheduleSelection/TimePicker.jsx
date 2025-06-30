@@ -6,7 +6,7 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
 {
 
     const [isAM, setIsAm] = useState(true);
-    const [slotNumber, setSlotNumber] = useState(9) // number of slots left
+    const [slotNumber, setSlotNumber] = useState(9) // number of slots left - This will need to be fetched from Firestore later
     const [selectedTime, setSelectedTime] = useState(null);
 
     const handleChangePeriod = () =>
@@ -24,13 +24,13 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
     {
         if (selectedTime === null)
         {
-            alert("Please select a time slot.");
+            alert("Please select a time slot."); // Will be replaced by custom modal later
             return;
         }
 
         const fullScheduleData = {
             ...dataWithDate,
-            time: selectedTime,
+            timePicked: selectedTime, // <-- CRITICAL FIX: Changed 'time' to 'timePicked'
         };
 
        await onSubmitSchedule(fullScheduleData);
@@ -66,7 +66,7 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
 
                 <div className='flex martian-font gap-x-8'>
 
-                    <button value={isAM ? "8:00am - 9:00am" : "1:00pm - 2:00pm"}
+                    <button value={isAM ? "8:00am - 9:00am" : "1:00pm - 2:00pm"} // Standardized
                         onClick={(e) => handleChooseTime(e)}
                         className={` shadow-md rounded-lg transition-all py-5 p-2 sm:px-10 duration-200 border-2 ${selectedTime === (isAM ? "8:00am - 9:00am" : "1:00pm - 2:00pm")
                             ? isAM ? 'bg-[#E1A500] border-[#C68C10] text-white' : ' text-white bg-purple-400 border-purple-500' :
@@ -75,35 +75,35 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
                         {isAM ? "8:00am - 9:00am" : "1:00pm - 2:00pm"}
                     </button>
 
-                    <button value={isAM ? "9:00am -10:00am" : "2:00pm - 3:00pm"}
+                    <button value={isAM ? "9:00am - 10:00am" : "2:00pm - 3:00pm"} // Standardized
                         onClick={(e) => handleChooseTime(e)}
-                        className={`shadow-md rounded-lg transition-all duration-200 py-5 p-2 sm:px-10 border-2 ${selectedTime === (isAM ? "9:00am -10:00am" : "2:00pm - 3:00pm")
+                        className={`shadow-md rounded-lg transition-all duration-200 py-5 p-2 sm:px-10 border-2 ${selectedTime === (isAM ? "9:00am - 10:00am" : "2:00pm - 3:00pm")
                             ? isAM ? 'bg-[#E1A500] border-[#C68C10] text-white' : ' text-white bg-purple-400 border-purple-500' :
-                            'bg-[#EBEBEB] text-[#7B7B7B] border-[#D4D4D4]'}`}>
+                            'bg-[#EBEBEB] text-[#7B7B7B] border-[#D4D4D4]'} ${isAM ? '' : ''}`}>
 
-                        {isAM ? "9:00am -10:00am" : "2:00pm - 3:00pm"}
+                        {isAM ? "9:00am - 10:00am" : "2:00pm - 3:00pm"}
                     </button>
 
                 </div>
 
                 <div className='flex martian-font gap-x-8'>
 
-                    <button value={isAM ? "10:00am-11:00am" : "3:00pm - 4:00pm"}
+                    <button value={isAM ? "10:00am - 11:00am" : "3:00pm - 4:00pm"} // Standardized
                         onClick={(e) => handleChooseTime(e)}
-                        className={`shadow-md rounded-lg transition-all py-5 p-2 sm:px-10 duration-200 border-2 ${selectedTime === (isAM ? "10:00am-11:00am" : "3:00pm - 4:00pm")
+                        className={`shadow-md rounded-lg transition-all duration-200  ${selectedTime === (isAM ? "10:00am - 11:00am" : "3:00pm - 4:00pm")
                             ? isAM ? 'bg-[#E1A500] border-[#C68C10] text-white' : ' text-white bg-purple-400 border-purple-500' :
-                            'bg-[#EBEBEB] text-[#7B7B7B] border-[#D4D4D4]'}`}>
+                            'bg-[#EBEBEB] text-[#7B7B7B] border-[#D4D4D4]'} ${isAM ? 'sm:px-7 border-2 py-5' : 'py-5 p-2 sm:px-10 border-2'}`}>
 
-                        {isAM ? "10:00am-11:00am" : "3:00pm - 4:00pm"}
+                        {isAM ? "10:00am - 11:00am" : "3:00pm - 4:00pm"}
                     </button>
 
-                    <button value={isAM ? "11:00am-12:00am" : "4:00pm - 5:00pm"}
+                    <button value={isAM ? "11:00am - 12:00pm" : "4:00pm - 5:00pm"} // Standardized (12:00pm for noon)
                         onClick={(e) => handleChooseTime(e)}
-                        className={`shadow-md rounded-lg transition-all duration-200 py-5 p-2 sm:px-10 border-2 ${selectedTime === (isAM ? "11:00am-12:00am" : "4:00pm - 5:00pm")
+                        className={`shadow-md rounded-lg transition-all duration-200  ${selectedTime === (isAM ? "11:00am - 12:00pm" : "4:00pm - 5:00pm")
                             ? isAM ? 'bg-[#E1A500] border-[#C68C10] text-white' : ' text-white bg-purple-400 border-purple-500' :
-                            'bg-[#EBEBEB] text-[#7B7B7B] border-[#D4D4D4]'}`}>
+                            'bg-[#EBEBEB] text-[#7B7B7B] border-[#D4D4D4]'} ${isAM ? 'sm:px-8 border-2 py-5' : 'py-5 p-2 sm:px-10 border-2'}`}>
 
-                        {isAM ? "11:00am-12:00am" : "4:00pm - 5:00pm"}
+                        {isAM ? "11:00am - 12:00pm" : "4:00pm - 5:00pm"}
                     </button>
 
                 </div>
@@ -111,7 +111,7 @@ const TimePicker = ({dataWithDate, onSubmitSchedule}) =>
             </div>
 
             <button className='bg-[#E1A500] border-[#C68C10] league-font text-lg sm:text-2xl px-13 py-2 sm:py-3 font-bold border-2 text-white rounded-lg hover:bg-amber-600 duration-200' onClick={handleSubmitSchedule}>
-                {/*  <Link to='/receipt'> */}Schedule{/* </Link> */}
+                {/* <Link to='/receipt'> */}Schedule{/* </Link> */}
             </button>
 
         </div>

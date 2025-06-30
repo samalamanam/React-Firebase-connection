@@ -30,7 +30,7 @@ const NewScheduleSelection = ({userData, getFullBookingData}) =>
       </div>
 
       <div className='flex flex-col justify-evenly items-center w-full sm:w-10/12 h-screen'>
-        <DatePicker userData={userData} onSubmitDate={onSubmitDate}/>
+        <DatePicker userData={userData} onSubmitDate={onSubmitDate} onDateSelectionChange={() => setIsDateSelected(false)} handleFirestoreError={handleFirestoreError} />
 
         {isDateSelected ? <TimePicker dataWithDate={dataWithDate} onSubmitSchedule={fullSchedSubmission}/> 
         : <h1 className='text-xl font-bold text-red-500 league-font h-5/12'>Please select a date first.</h1>}
