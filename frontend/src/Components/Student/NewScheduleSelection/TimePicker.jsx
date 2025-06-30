@@ -119,6 +119,13 @@ const TimePicker = ({dataWithDate, onSubmitSchedule, handleFirestoreError}) => /
 
        await onSubmitSchedule(fullScheduleData);
     }
+        const isSlotFull = (timeSlotKey) => {
+        if (!fetchedDailySlots || !fetchedDailySlots[timeSlotKey]) {
+            return false; // Or true, depending on desired default for uninitialized slots
+        }
+        const slot = fetchedDailySlots[timeSlotKey];
+        return slot.bookedCount >= slot.maxCapacity;
+    };
 
     return (
         <div className='flex flex-col justify-center items-center gap-y-5 w-fit md:mx-10'>
